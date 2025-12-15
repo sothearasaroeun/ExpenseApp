@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../model/expense.dart';
 
 class ExpenseForm extends StatefulWidget {
@@ -14,6 +15,22 @@ class _ExpenseFormState extends State<ExpenseForm> {
   final amountController = TextEditingController();
   
   ExpenseType? _selectedType = ExpenseType.food;
+  DateTime? _selectedDate;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context, 
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000), 
+      lastDate: DateTime(2030),
+      );
+
+      if (picked != null && picked != _selectedDate) {
+        setState(() {
+          _selectedDate = picked;
+        });
+      }
+  }
 
   void _onSaveExpense() {
     final double? amount = double.tryParse(amountController.text);
@@ -28,7 +45,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     Expense expense = Expense(
       title: titleController.text.trim(),
       amount: amount,
-      date: DateTime.now(),
+      date: _selectedDate ?? DateTime.now(),
       type: ExpenseType.food,
     );
 
@@ -97,6 +114,20 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 _selectedType = newValue;
               });
             }),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _selectedDate == null ? "No date selected" : DateFormat('EEE, MMM d').format(_selectedDate!),
+                style: const TextStyle(fontSize: 16),
+              ),
+              IconButton(
+                onPressed: () => _selectDate(context), 
+                icon: const Icon(Icons.calendar_today))
+            ],
+          ),
+          const SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

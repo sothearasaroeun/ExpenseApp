@@ -17,7 +17,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   @override
   void initState() {
     super.initState();
-    _registeredExpenses = widget.expenses;
+    _registeredExpenses = List.from(widget.expenses);
   }
 
   void _onAddPress() {
@@ -32,20 +32,39 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
-  void _removeExpense(int index) {
+  void _removeExpense(int index, Expense removeExpense) {
     setState(() {
       _registeredExpenses.removeAt(index);
     });
+    
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Expense deleted.'),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Undo', 
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(index, removeExpense);
+            });
+          }),
+        ),
+    );
   }
+
 
   @override
   Widget build(BuildContext context) {
+    final bool isEmpty = _registeredExpenses.isEmpty;
+
     return Scaffold(
       backgroundColor: Colors.blue[100],
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: const Text(
-          "The-Best Expenses App",
+          "Ronan-The-Best Expenses App",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: <Widget>[
@@ -58,9 +77,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           )
         ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        child: ListView.builder(
+        child: isEmpty ? const Center(
+          child: Text(
+            "No Expenses found. Start adding some!",
+            style: TextStyle(fontSize: 18, color: Colors.black),
+            textAlign: TextAlign.center,
+            ),
+          )
+        : ListView.builder(
           itemCount: _registeredExpenses.length,
           itemBuilder: (context, index) {
             final expense = _registeredExpenses[index];
@@ -69,7 +96,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               key: Key(expense.id),
               direction: DismissDirection.endToStart,
               onDismissed: (direction) {
-                _removeExpense(index);
+                _removeExpense(index, expense);
               },
               background: Container(
                 color: Colors.red,
