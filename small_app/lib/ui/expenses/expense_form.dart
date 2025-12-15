@@ -12,10 +12,16 @@ class ExpenseForm extends StatefulWidget {
 class _ExpenseFormState extends State<ExpenseForm> {
   final titleController = TextEditingController();
   final amountController = TextEditingController();
+  
+  ExpenseType? _selectedType = ExpenseType.food;
 
-  void _onCreate() {
+  void _onSaveExpense() {
     final double? amount = double.tryParse(amountController.text);
-    if (titleController.text.isEmpty || amount == null || amount <= 0) {
+    if (
+      titleController.text.isEmpty || 
+      amount == null || 
+      amount <= 0 || 
+      _selectedType == null ) {
       return;
     }
 
@@ -23,7 +29,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       title: titleController.text.trim(),
       amount: amount,
       date: DateTime.now(),
-      type: ExpenseType.food, // Will improve with dropdown later
+      type: ExpenseType.food,
     );
 
     widget.onPressCreate(expense);
@@ -65,6 +71,33 @@ class _ExpenseFormState extends State<ExpenseForm> {
             ),
           ),
           const SizedBox(height: 20),
+
+          DropdownButton<ExpenseType>(
+            value: _selectedType,
+            hint: const Text("Selected category"),
+            isExpanded: true,
+            icon: const Icon(Icons.arrow_downward_sharp),
+            elevation: 16,
+            style: const TextStyle(color: Colors.black),
+            underline: Container(
+              height: 2,
+              color: Colors.black,
+            ),
+            items: ExpenseType.values.map<DropdownMenuItem<ExpenseType>>((ExpenseType type) {
+              return DropdownMenuItem<ExpenseType>(
+                value: type,
+                child: Text(
+                  type.name.toUpperCase(), 
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              );
+            }).toList(), 
+            onChanged: (ExpenseType? newValue) {
+              setState(() {
+                _selectedType = newValue;
+              });
+            }),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -79,9 +112,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
               const SizedBox(width: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                onPressed: _onCreate,
+                onPressed: _onSaveExpense,
                 child: const Text(
-                  "Create",
+                  "Save Expense",
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
