@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../model/expense_model.dart';
 import 'package:intl/intl.dart';
+import '../../model/expense.dart';
 
 class ExpenseItem extends StatelessWidget {
   final Expense expense;
@@ -11,11 +11,11 @@ class ExpenseItem extends StatelessWidget {
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10)
+        borderRadius: BorderRadius.circular(10),
       ),
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -23,21 +23,24 @@ class ExpenseItem extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(expense.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-                SizedBox(height: 5),
-                Text("\$${expense.amount.toString()}")
+                Text(
+                  expense.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const SizedBox(height: 5),
+                Text("\$${expense.amount?.toStringAsFixed(2) ?? '0.00'}"),
               ],
             ),
             Row(
               children: [
                 Icon(expense.type.icon),
-                SizedBox(width: 10),
-                Text(DateFormat('MM/dd/yyyy').format(expense.date))
+                const SizedBox(width: 10),
+                Text(DateFormat('MM/dd/yyyy').format(expense.date)),
               ],
-            )
+            ),
           ],
         ),
-      )
+      ),
     );
   }
 }

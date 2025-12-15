@@ -1,4 +1,4 @@
-import '../model/expense_model.dart';
+import '../model/expense.dart';
 
 List<Expense> expenses = [
   Expense(title: "Burger & Fries", amount: 7.50, date: DateTime(2025, 11, 20), type: ExpenseType.food),
